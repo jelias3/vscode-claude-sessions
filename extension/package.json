@@ -1,0 +1,100 @@
+{
+  "name": "claude-status",
+  "displayName": "Claude Code status",
+  "description": "List the live Claude Code sessions in the Explorer, and go to the terminal that runs one.",
+  "version": "0.6.0",
+  "publisher": "jelias3",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "extensionKind": [
+    "workspace"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "claudeStatus.showRoster",
+        "title": "Claude status: show the live Claude sessions"
+      },
+      {
+        "command": "claudeStatus.attachAll",
+        "title": "Claude status: open a tab for every session"
+      },
+      {
+        "command": "claudeStatus.refresh",
+        "title": "Claude status: read the roster again",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "claudeStatus.writeReport",
+        "title": "Claude status: report what it can see"
+      },
+      {
+        "command": "claudeStatus.goTo",
+        "title": "Claude status: go to this session"
+      }
+    ],
+    "views": {
+      "explorer": [
+        {
+          "id": "claudeStatus.sessions",
+          "name": "Claude sessions"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "claudeStatus.sessions",
+        "contents": "No Claude session runs on this login node.\nA session appears here as soon as it starts."
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "claudeStatus.goTo",
+          "when": "false"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "claudeStatus.attachAll",
+          "when": "view == claudeStatus.sessions"
+        },
+        {
+          "command": "claudeStatus.refresh",
+          "when": "view == claudeStatus.sessions",
+          "group": "navigation"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Claude Code status",
+      "properties": {
+        "claudeStatus.stateDirectory": {
+          "type": "string",
+          "default": "",
+          "description": "Directory the status writer fills. Leave empty to use CLAUDE_CONFIG_DIR, then the default path."
+        },
+        "claudeStatus.pollSeconds": {
+          "type": "number",
+          "default": 2,
+          "minimum": 1,
+          "maximum": 60,
+          "description": "Seconds between two reads of the state directory."
+        },
+        "claudeStatus.noticeSeconds": {
+          "type": "number",
+          "default": 10,
+          "minimum": 2,
+          "maximum": 120,
+          "description": "How long the status bar holds the notice that a session went idle."
+        }
+      }
+    }
+  }
+}
