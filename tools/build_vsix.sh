@@ -3,7 +3,7 @@
 #
 # A .vsix is a zip holding three things: a manifest in the form VS Code reads,
 # a table of content types, and the extension under extension/. No network and
-# no package manager are needed, so this runs on midway3 as it is.
+# no package manager are needed, so this runs on any machine with zip.
 #
 #   tools/build_vsix.sh        the file lands in build/
 
@@ -26,6 +26,7 @@ cp -r "$SOURCE"/. "$STAGE/extension/"
 # VS Code shows a README on the details page of the extension. It takes the
 # one this project already has, so there is never a second copy to go stale.
 cp "$HERE/README.md" "$STAGE/extension/README.md"
+cp "$HERE/LICENSE" "$STAGE/extension/LICENSE"
 
 cat > "$STAGE/[Content_Types].xml" <<XML
 <?xml version="1.0" encoding="utf-8"?>
@@ -61,6 +62,7 @@ cat > "$STAGE/extension.vsixmanifest" <<XML
   <Assets>
     <Asset Type="Microsoft.VisualStudio.Code.Manifest" Path="extension/package.json" Addressable="true"/>
     <Asset Type="Microsoft.VisualStudio.Services.Content.Details" Path="extension/README.md" Addressable="true"/>
+    <Asset Type="Microsoft.VisualStudio.Services.Content.License" Path="extension/LICENSE" Addressable="true"/>
   </Assets>
 </PackageManifest>
 XML

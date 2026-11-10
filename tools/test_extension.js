@@ -7,10 +7,13 @@
 
 const Module = require("module");
 const fs = require("fs");
+const os = require("os");
 const path = require("path");
 const assert = require("assert");
 
 const EXTENSION = path.resolve(__dirname, "..", "extension");
+// The Claude Code configuration directory of whoever runs this test.
+const CONFIG_DIR = (process.env.CLAUDE_CONFIG_DIR || "").trim() || path.join(os.homedir(), ".claude");
 
 const made = [];
 const terminalsMade = [];
@@ -99,7 +102,7 @@ const stub = {
     },
   },
   workspace: {
-    workspaceFolders: [{ uri: { fsPath: "/project2/yangili1/jelias3/splicing_kinetics_datasets" } }],
+    workspaceFolders: [{ uri: { fsPath: process.cwd() } }],
     getConfiguration() {
       return { get: (key, fallback) => (configValues[key] === undefined ? fallback : configValues[key]) };
     },
@@ -289,7 +292,7 @@ if (beforeHome === undefined) {
 }
 
 console.log("the four routes a click can take");
-process.env.CLAUDE_CONFIG_DIR = "/scratch/midway3/jelias3/claude-data";
+process.env.CLAUDE_CONFIG_DIR = CONFIG_DIR;
 configValues.stateDirectory = "";
 made.length = 0;
 terminalsMade.length = 0;
@@ -298,13 +301,13 @@ stub.window.terminals = [];
 extension.activate({ subscriptions: [] });
 
 (async () => {
-  // A record from another login node must reach no tmux and open no tab.
+  // A record from another machine must reach no tmux and open no tab.
   const far = record({ sessionId: "far-one", name: "a far session", pidDomain: "linux:other:pid:[1]", tmux: "0:@0.%0" });
   const farRoute = await attach.routeOf(stub, far);
   const farWent = await extension.goTo(far);
-  check("another login node gives no route", () => assert.strictEqual(farRoute.kind, "elsewhere"));
-  check("another login node opens no terminal", () => assert.strictEqual(attach.opened.size, 0));
-  check("another login node says where the session is", () => assert.ok(farWent.message.includes("another login node")));
+  check("another machine gives no route", () => assert.strictEqual(farRoute.kind, "elsewhere"));
+  check("another machine opens no terminal", () => assert.strictEqual(attach.opened.size, 0));
+  check("another machine says where the session is", () => assert.ok(farWent.message.includes("another machine")));
 
   // A session outside tmux is reached by walking up to the tab that runs it.
   const ancestor = chain[chain.length - 1];
@@ -320,7 +323,7 @@ extension.activate({ subscriptions: [] });
 
   // A live tmux session with no tab in this window must open one and attach.
   const live = roster
-    .readRecords(roster.rosterDirectory("/scratch/midway3/jelias3/claude-data"))
+    .readRecords(roster.rosterDirectory(CONFIG_DIR))
     .filter((one) => roster.liveness(one).live && roster.tmuxTarget(one));
   if (!live.length) {
     console.log("  skipped the tmux routes, no live tmux session on this host");

@@ -84,7 +84,7 @@ function readRecords(directory) {
 function liveness(record) {
   const here = processDomain();
   if (!here || record.pidDomain !== here) {
-    return { live: null, here: false, reason: "another login node" };
+    return { live: null, here: false, reason: "another machine" };
   }
   const start = processStart(record.pid);
   if (!start) {

@@ -25,9 +25,11 @@ let notice = { text: "", until: 0 };
 /** Read the settings of this extension in one object. */
 function settings() {
   const config = vscode.workspace.getConfiguration("claudeStatus");
+  const configured = state.configDirectory(config.get("configDirectory"));
   return {
-    directory: state.stateDirectory(config.get("stateDirectory")),
-    roster: roster.rosterDirectory(state.configDirectory()),
+    config: configured,
+    directory: state.stateDirectory(config.get("stateDirectory"), configured),
+    roster: roster.rosterDirectory(configured),
     noticeSeconds: config.get("noticeSeconds", 10),
     pollSeconds: config.get("pollSeconds", 2),
   };
@@ -202,7 +204,7 @@ async function attachAll() {
   await tmux.refreshNames(Date.now());
   const here = liveRecords(option).filter((record) => roster.liveness(record).here);
   if (!here.length) {
-    vscode.window.showInformationMessage("No Claude session runs on this login node.");
+    vscode.window.showInformationMessage("No Claude session runs on this machine.");
     return { attached: [], already: [], skipped: [] };
   }
 

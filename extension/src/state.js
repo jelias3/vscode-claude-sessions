@@ -4,28 +4,43 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 
-// Where the status writer puts its files, when nothing else names a directory.
-const DEFAULT_CONFIG_DIR = "/scratch/midway3/jelias3/claude-data";
+// Where Claude Code keeps its configuration, when nothing else names it.
+const DEFAULT_CONFIG_FOLDER = ".claude";
 const STATE_FOLDER = "statusline-state";
+
+/** Turn a path a person typed into one the file system takes. */
+function expand(value) {
+  return path.resolve(String(value).trim().replace(/^~/, os.homedir()));
+}
 
 /**
  * Find the directory the status writer fills.
  *
- * The setting wins. The variable CLAUDE_CONFIG_DIR, which names the Claude
- * Code configuration directory, comes next. The default path comes last,
- * because the editor server does not always read the shell profile.
+ * The setting wins. The configuration directory supplies the rest.
  */
-function stateDirectory(setting) {
+function stateDirectory(setting, configSetting) {
   if (setting && String(setting).trim()) {
-    return path.resolve(String(setting).trim().replace(/^~/, os.homedir()));
+    return expand(setting);
   }
-  return path.join(configDirectory(), STATE_FOLDER);
+  return path.join(configDirectory(configSetting), STATE_FOLDER);
 }
 
-/** Find the Claude Code configuration directory, which holds both parts. */
-function configDirectory() {
+/**
+ * Find the Claude Code configuration directory, which holds the roster.
+ *
+ * The setting wins. The variable CLAUDE_CONFIG_DIR, which names that same
+ * directory, comes next. The usual place comes last, because the editor
+ * server does not always read the shell profile that sets the variable.
+ */
+function configDirectory(setting) {
+  if (setting && String(setting).trim()) {
+    return expand(setting);
+  }
   const fromEnvironment = process.env.CLAUDE_CONFIG_DIR;
-  return fromEnvironment && fromEnvironment.trim() ? fromEnvironment.trim() : DEFAULT_CONFIG_DIR;
+  if (fromEnvironment && fromEnvironment.trim()) {
+    return expand(fromEnvironment);
+  }
+  return path.join(os.homedir(), DEFAULT_CONFIG_FOLDER);
 }
 
 /**

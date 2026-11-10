@@ -10,11 +10,26 @@ Call it twice, with a turn in between, to see whether a number moves.
 """
 
 import json
+import os
 import sys
 import time
 from pathlib import Path
 
-STATE = Path("/scratch/midway3/jelias3/claude-data/statusline-state")
+
+def state_directory() -> Path:
+    """Find the directory the writer fills, the way the extension finds it.
+
+    An argument wins. The variable CLAUDE_CONFIG_DIR, which names the Claude
+    Code configuration directory, comes next. The usual place comes last.
+    """
+    if len(sys.argv) > 1:
+        return Path(sys.argv[1]).expanduser()
+    config = os.environ.get("CLAUDE_CONFIG_DIR", "").strip()
+    root = Path(config).expanduser() if config else Path.home() / ".claude"
+    return root / "statusline-state"
+
+
+STATE = state_directory()
 
 
 def load(path: Path) -> dict:

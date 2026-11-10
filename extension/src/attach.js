@@ -83,9 +83,9 @@ async function openAndAttach(vscode, record, id, clients) {
 async function routeOf(vscode, record) {
   const life = roster.liveness(record);
   if (!life.here) {
-    // Another login node holds this one. A tmux session of the same name
+    // Another machine holds this one. A tmux session of the same name
     // can run here as well, and attaching it would open the wrong session.
-    return { kind: "elsewhere", why: life.reason || "another login node" };
+    return { kind: "elsewhere", why: life.reason || "another machine" };
   }
 
   const tabs = await tabsByPid(vscode);
@@ -118,7 +118,7 @@ async function goTo(vscode, record) {
   const route = await routeOf(vscode, record);
 
   if (route.kind === "elsewhere") {
-    return { went: "elsewhere", message: `${name} runs on another login node. Nothing here can reach it.` };
+    return { went: "elsewhere", message: `${name} runs on another machine. Nothing here can reach it.` };
   }
   if (route.kind === "focus") {
     route.tabs.get(route.shell).show(false);

@@ -2,9 +2,19 @@
   "name": "claude-status",
   "displayName": "Claude Code status",
   "description": "List the live Claude Code sessions in the Explorer, and go to the terminal that runs one.",
-  "version": "0.6.0",
-  "publisher": "jelias3",
+  "version": "0.9.0",
+  "publisher": "claude-code-tools",
   "license": "MIT",
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "claude",
+    "claude code",
+    "tmux",
+    "terminal",
+    "sessions"
+  ],
   "engines": {
     "vscode": "^1.75.0"
   },
@@ -50,7 +60,7 @@
     "viewsWelcome": [
       {
         "view": "claudeStatus.sessions",
-        "contents": "No Claude session runs on this login node.\nA session appears here as soon as it starts."
+        "contents": "No Claude Code session is running on this machine.\nA session appears here as soon as it starts."
       }
     ],
     "menus": {
@@ -75,10 +85,15 @@
     "configuration": {
       "title": "Claude Code status",
       "properties": {
+        "claudeStatus.configDirectory": {
+          "type": "string",
+          "default": "",
+          "description": "The Claude Code configuration directory, which holds the session records. Leave it empty to use CLAUDE_CONFIG_DIR, and then ~/.claude."
+        },
         "claudeStatus.stateDirectory": {
           "type": "string",
           "default": "",
-          "description": "Directory the status writer fills. Leave empty to use CLAUDE_CONFIG_DIR, then the default path."
+          "description": "The directory the optional status line writer fills. Leave it empty to use statusline-state under the configuration directory."
         },
         "claudeStatus.pollSeconds": {
           "type": "number",

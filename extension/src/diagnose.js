@@ -99,7 +99,7 @@ async function report(vscode, option, now) {
   say("A shell replaced by its own tmux client cannot match, because no shell is left.");
   say("This report reads the routes and sends no tmux command, so it changes nothing.");
 
-  const where = path.join(state.configDirectory(), REPORT_NAME);
+  const where = path.join(option.config || state.configDirectory(), REPORT_NAME);
   const text = lines.join("\n");
   try {
     fs.writeFileSync(where, `${text}\n`);
